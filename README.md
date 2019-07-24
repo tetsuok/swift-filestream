@@ -18,9 +18,9 @@ Non-goals
 
 ## Sample Usage
 
-### Opening a file for writing
+### Writing textual data into files
 
-```
+```Swift
 let filename = "/path/to/file"
 guard var output = OutputFileStream(filename) else {
   print("Cannot open", filename)
