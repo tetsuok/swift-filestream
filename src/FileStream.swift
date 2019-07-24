@@ -12,7 +12,66 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// TODO: Implement InputFileStream
+public struct InputFileStream {
+  internal var fp: UnsafeMutablePointer<FILE>?
+  internal var isEOF: Bool
+  internal var fileSize: Int64
+  internal var buf: UnsafeMutableBufferPointer<UInt8>
+
+  static internal let defaultCapacity = 4096
+
+  init?(_ name: String, capacity: Int = InputFileStream.defaultCapacity) {
+    if name.isEmpty {
+      return nil
+    }
+    var fp: UnsafeMutablePointer<FILE>?
+    var fileSize: Int64 = 0
+    _ = name.utf8.withContiguousStorageIfAvailable { utf8 in
+       fp = swift_fopen_for_read(utf8.baseAddress!)
+       fileSize = swift_file_size(utf8.baseAddress!)
+    }
+    if fp == nil || fileSize < 0 {
+      return nil
+    }
+    self.fp = fp
+    self.isEOF = false
+    self.fileSize = fileSize
+    self.buf = UnsafeMutableBufferPointer<UInt8>.allocate(capacity: capacity)
+    self.buf.initialize(repeating: 0)
+  }
+
+  internal mutating func _read(_ buf: UnsafeMutableBufferPointer<UInt8>) -> String? {
+    let utf8Count = swift_fread_stream(buf.baseAddress!, 1, buf.count, self.fp)
+    guard utf8Count > 0 else {
+      self.isEOF = true
+      return nil
+    }
+    let utf8 = UnsafePointer<UInt8>(buf.baseAddress!)
+    return String(cString: utf8)
+  }
+
+  public mutating func read() -> String? {
+    return _read(self.buf)
+  }
+
+  public mutating func readAll() -> String? {
+    if self.isEOF {
+      return nil
+    }
+    self.buf.deallocate()
+    let cap = Int64(InputFileStream.defaultCapacity) + self.fileSize
+    if cap > Int.max {
+      return nil
+    }
+    self.buf = UnsafeMutableBufferPointer<UInt8>.allocate(capacity: Int(cap))
+    return _read(self.buf)
+  }
+
+  public mutating func close() {
+    swift_fclose(self.fp)
+    self.buf.deallocate()
+  }
+}
 
 public struct OutputFileStream: TextOutputStream {
   internal var fp: UnsafeMutablePointer<FILE>?
@@ -23,7 +82,7 @@ public struct OutputFileStream: TextOutputStream {
     }
     var fp: UnsafeMutablePointer<FILE>?
     _ = name.utf8.withContiguousStorageIfAvailable { utf8 in
-       fp = swift_fopen(utf8.baseAddress!)
+       fp = swift_fopen_for_write(utf8.baseAddress!)
     }
     if fp == nil {
       return nil
@@ -51,7 +110,7 @@ public struct OutputFileStream: TextOutputStream {
 #endif
   }
 
-  func close() {
+  public mutating func close() {
     swift_fclose(self.fp)
   }
 }

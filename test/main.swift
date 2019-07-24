@@ -14,12 +14,39 @@
 
 func main() {
     let name = "/tmp/swift_filestream_test"
-    guard var output = OutputFileStream(name) else {
-      print("Cannot open", name)
-      return
+    // write()
+    do {
+        guard var output = OutputFileStream(name) else {
+            print("Cannot open", name)
+            return
+        }
+        defer { output.close() }
+        print("hello", to: &output)
     }
-    defer { output.close() }
-    print("hello", to: &output)
+    // read()
+    do {
+        guard var input = InputFileStream(name) else {
+            print("Cannot open", name)
+            return
+        }
+        defer { input.close() }
+        while let data = input.read() {
+            print(data)
+        }
+    }
+    // readAll()
+    do {
+        guard var input = InputFileStream(name) else {
+            print("Cannot open", name)
+            return
+        }
+        defer { input.close() }
+        guard let data = input.readAll() else {
+          return
+        }
+        print(data, terminator: "")
+    }
+    print("OK")
 }
 
 main()

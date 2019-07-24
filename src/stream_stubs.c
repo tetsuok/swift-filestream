@@ -14,13 +14,35 @@
 
 #include "stream_stubs.h"
 
-FILE *swift_fopen(const void *filename) {
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+FILE *swift_fopen_for_read(const void *filename) {
+  return fopen((const char *)filename, "r");
+}
+
+FILE *swift_fopen_for_write(const void *filename) {
   return fopen((const char *)filename, "w");
 }
 
 int swift_fclose(FILE *stream) { return fclose(stream); }
 
+size_t swift_fread_stream(void *ptr, size_t size, size_t nitems,
+                          FILE *stream) {
+  return fread(ptr, size, nitems, stream);
+}
+
 size_t swift_fwrite_stream(const void *ptr, size_t size, size_t nitems,
                            FILE *stream) {
   return fwrite(ptr, size, nitems, stream);
+}
+
+long long swift_file_size(const void* filename) {
+  struct stat statbuf;
+  const int ret = stat((const char *)filename, &statbuf);
+  if (ret < 0) {
+    return ret;
+  }
+  return statbuf.st_size;
 }
