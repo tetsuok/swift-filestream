@@ -18,9 +18,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-FILE* swift_fopen(const void* filename);
-int swift_fclose(FILE* stream);
-size_t swift_fwrite_fp(const void* ptr, size_t size, size_t nitems,
-                       FILE* stream);
+FILE *swift_fopen(const void *filename);
+int swift_fclose(FILE *stream);
+size_t swift_fwrite_stream(const void *ptr, size_t size, size_t nitems,
+                           FILE *stream);
 
 #endif  // SWIFT_FILESTREAM_STREAM_STUBS_H_

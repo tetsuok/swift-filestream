@@ -42,11 +42,11 @@ public struct OutputFileStream: TextOutputStream {
     // TODO: remove this once Swift 5.1 is released.
 #if swift(<5.1)
     _ = string.utf8.withContiguousStorageIfAvailable { utf8 in
-      swift_fwrite_fp(utf8.baseAddress!, 1, utf8.count, self.fp)
+      swift_fwrite_stream(utf8.baseAddress!, 1, utf8.count, self.fp)
     }
 #else
     _ = string.withUTF8 { utf8 in
-      swift_fwrite_fp(utf8.baseAddress!, 1, utf8.count, self.fp)
+      swift_fwrite_stream(utf8.baseAddress!, 1, utf8.count, self.fp)
     }
 #endif
   }

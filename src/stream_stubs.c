@@ -14,13 +14,13 @@
 
 #include "stream_stubs.h"
 
-FILE* swift_fopen(const void* filename) {
-  return fopen((const char*)filename, "w");
+FILE *swift_fopen(const void *filename) {
+  return fopen((const char *)filename, "w");
 }
 
-int swift_fclose(FILE* stream) { return fclose(stream); }
+int swift_fclose(FILE *stream) { return fclose(stream); }
 
-size_t swift_fwrite_fp(const void* ptr, size_t size, size_t nitems,
-                       FILE* stream) {
+size_t swift_fwrite_stream(const void *ptr, size_t size, size_t nitems,
+                           FILE *stream) {
   return fwrite(ptr, size, nitems, stream);
 }
