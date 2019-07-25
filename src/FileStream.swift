@@ -18,7 +18,7 @@ public struct InputFileStream {
   private var fileSize: Int64
   private var buf: UnsafeMutableBufferPointer<UInt8>
 
-  static private let defaultCapacity = 4096
+  static public let defaultCapacity = 4096
 
   init?(_ name: String, capacity: Int = InputFileStream.defaultCapacity) {
     if name.isEmpty {
@@ -50,7 +50,13 @@ public struct InputFileStream {
     return String(cString: utf8)
   }
 
-  public mutating func read() -> String? {
+  public mutating func read(size: Int = InputFileStream.defaultCapacity) -> String? {
+    if self.isEOF {
+      return nil
+    }
+    if InputFileStream.defaultCapacity < size {
+      reallocBuf(size)
+    }
     return _read(self.buf)
   }
 
@@ -58,18 +64,22 @@ public struct InputFileStream {
     if self.isEOF {
       return nil
     }
-    self.buf.deallocate()
     let cap = Int64(InputFileStream.defaultCapacity) + self.fileSize
     if cap > Int.max {
       return nil
     }
-    self.buf = UnsafeMutableBufferPointer<UInt8>.allocate(capacity: Int(cap))
+    reallocBuf(Int(cap))
     return _read(self.buf)
   }
 
   public mutating func close() {
     swift_fclose(self.fp)
     self.buf.deallocate()
+  }
+
+  private mutating func reallocBuf(_ cap: Int) {
+    self.buf.deallocate()
+    self.buf = UnsafeMutableBufferPointer<UInt8>.allocate(capacity: cap)
   }
 }
 
