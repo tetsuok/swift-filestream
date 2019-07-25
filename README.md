@@ -18,6 +18,33 @@ Non-goals
 
 ## Sample Usage
 
+### Reading data from files
+
+```Swift
+let filename = "/path/to/file"
+guard var input = InputFileStream(filename) else {
+  print("Cannot open", filename)
+  return
+}
+defer { input.close() }
+// Read blocks of data (not line)
+while let data = input.read() {
+  // process data
+}
+```
+
+You can read data until EOF:
+
+```Swift
+guard var input = InputFileStream(filename) else {
+  print("Cannot open", filename)
+  return
+}
+defer { input.close() }
+let data = input.readAll()
+// process data
+```
+
 ### Writing textual data into files
 
 ```Swift
