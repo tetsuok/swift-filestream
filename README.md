@@ -21,6 +21,8 @@ Non-goals
 ### Reading data from files
 
 ```Swift
+import FileStream
+
 let filename = "/path/to/file"
 guard var input = InputFileStream(filename) else {
   print("Cannot open", filename)
@@ -48,6 +50,8 @@ let data = input.readAll()
 ### Writing textual data into files
 
 ```Swift
+import FileStream
+
 let filename = "/path/to/file"
 guard var output = OutputFileStream(filename) else {
   print("Cannot open", filename)

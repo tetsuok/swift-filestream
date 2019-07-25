@@ -20,7 +20,7 @@ public struct InputFileStream {
 
   static public let defaultCapacity = 4096
 
-  init?(_ name: String, capacity: Int = InputFileStream.defaultCapacity) {
+  public init?(_ name: String, capacity: Int = InputFileStream.defaultCapacity) {
     if name.isEmpty {
       return nil
     }
@@ -86,7 +86,7 @@ public struct InputFileStream {
 public struct OutputFileStream: TextOutputStream {
   private var fp: UnsafeMutablePointer<FILE>?
 
-  init?(_ name: String) {
+  public init?(_ name: String) {
     if name.isEmpty {
       return nil
     }
