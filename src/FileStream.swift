@@ -13,12 +13,12 @@
 // limitations under the License.
 
 public struct InputFileStream {
-  internal var fp: UnsafeMutablePointer<FILE>?
-  internal var isEOF: Bool
-  internal var fileSize: Int64
-  internal var buf: UnsafeMutableBufferPointer<UInt8>
+  private var fp: UnsafeMutablePointer<FILE>?
+  private var isEOF: Bool
+  private var fileSize: Int64
+  private var buf: UnsafeMutableBufferPointer<UInt8>
 
-  static internal let defaultCapacity = 4096
+  static private let defaultCapacity = 4096
 
   init?(_ name: String, capacity: Int = InputFileStream.defaultCapacity) {
     if name.isEmpty {
@@ -40,7 +40,7 @@ public struct InputFileStream {
     self.buf.initialize(repeating: 0)
   }
 
-  internal mutating func _read(_ buf: UnsafeMutableBufferPointer<UInt8>) -> String? {
+  private mutating func _read(_ buf: UnsafeMutableBufferPointer<UInt8>) -> String? {
     let utf8Count = swift_fread_stream(buf.baseAddress!, 1, buf.count, self.fp)
     guard utf8Count > 0 else {
       self.isEOF = true
@@ -74,7 +74,7 @@ public struct InputFileStream {
 }
 
 public struct OutputFileStream: TextOutputStream {
-  internal var fp: UnsafeMutablePointer<FILE>?
+  private var fp: UnsafeMutablePointer<FILE>?
 
   init?(_ name: String) {
     if name.isEmpty {
