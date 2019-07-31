@@ -1,0 +1,34 @@
+env:
+  global:
+    - SWIFT_BRANCH=swift-5.0.2-release
+    - SWIFT_VERSION=swift-5.0.2-RELEASE
+jobs:
+  include:
+    - stage: Linux
+      os: linux
+      language: generic
+      dist: bionic
+      sudo: required
+      install:
+        - sudo apt install libicu-dev
+        - mkdir local
+        - curl https://swift.org/builds/$SWIFT_BRANCH/ubuntu1804/$SWIFT_VERSION/$SWIFT_VERSION-ubuntu18.04.tar.gz
+          -s | tar xz -C local
+        - export PATH="$PATH:$(pwd)/local/$SWIFT_VERSION-ubuntu18.04/usr/bin"
+      script:
+        - swift build
+        - swift build -c release
+        - swift test
+    - stage: macOS
+      os: osx
+      osx_image: xcode11
+      language: swift
+      sudo: required
+      install:
+        - curl -O https://swift.org/builds/$SWIFT_BRANCH/xcode/$SWIFT_VERSION/$SWIFT_VERSION-osx.pkg
+        - sudo installer -pkg $SWIFT_VERSION-osx.pkg -target /
+        - export PATH="$PATH:$(dirname xcrun --toolchain swift -f swift)"
+      script:
+        - swift build
+        - swift build -c release
+        - swift test
