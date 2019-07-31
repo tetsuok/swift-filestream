@@ -1,4 +1,4 @@
-# swift-filestream
+# swift-filestream [![Build Status](https://travis-ci.org/tetsuok/swift-filestream.svg?branch=master)](https://travis-ci.org/tetsuok/swift-filestream)
 
 Provides efficient file stream API for reading from or writing to files on
 Linux and macOS, which is currently missing in Swift's standard library. The
